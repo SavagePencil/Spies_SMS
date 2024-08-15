@@ -1,0 +1,52 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Link SMS",
+            "type": "shell",
+            "command": "wlalink -d -r -v -s linkfile release/spies.sms",
+
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+
+            "dependsOn": "Assemble SMS"
+        },
+        {
+            "label": "Assemble SMS",
+            "type": "shell",
+            "command": "wla-z80 -v -o ../obj/main.o main.asm",
+            "options": { "cwd": "./src/" },
+       
+            "group": "build"
+        },
+        {
+            "label": "Build & Run in MEKA",
+            "type": "shell",
+            "command": "${env:MEKA_PATH}/mekaw release/spies.sms -DEBUG",
+
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+
+            "dependsOn": "Link SMS"
+        },
+        {
+            "label": "Build & Run in Emulicious",
+            "type": "shell",
+            "command": "${env:EMULICIOUS_PATH}/emulicious.bat",
+            "options": { "cwd": "${env:EMULICIOUS_PATH}/" },
+
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+
+            "dependsOn": "Link SMS"
+        }
+    ]
+}
